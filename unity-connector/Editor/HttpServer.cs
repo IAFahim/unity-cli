@@ -72,6 +72,7 @@ namespace UnityCliConnector
         {
             if (s_Listener == null) return;
 
+            var port = s_Port;
             s_Cts?.Cancel();
             s_Cts?.Dispose();
             s_Cts = null;
@@ -88,6 +89,7 @@ namespace UnityCliConnector
 
             s_Listener = null;
             InstanceRegistry.Unregister();
+            Debug.Log($"[UnityCliConnector] HTTP server stopped (was port {port})");
         }
 
         static async Task ListenLoop(CancellationToken ct)
