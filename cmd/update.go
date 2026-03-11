@@ -64,7 +64,7 @@ func updateCmd(args []string) error {
 
 	fmt.Printf("Downloading %s...\n", asset.Name)
 
-	tmpFile, err := download(asset.BrowserDownloadURL)
+	tmpFile, err := download(asset.BrowserDownloadURL, filepath.Dir(exe))
 	if err != nil {
 		return fmt.Errorf("download failed: %w", err)
 	}
@@ -118,7 +118,7 @@ func findAsset(assets []ghAsset) *ghAsset {
 	return nil
 }
 
-func download(url string) (string, error) {
+func download(url string, targetDir string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err
@@ -129,7 +129,7 @@ func download(url string) (string, error) {
 		return "", fmt.Errorf("download returned %d", resp.StatusCode)
 	}
 
-	tmp, err := os.CreateTemp("", "unity-cli-update-*")
+	tmp, err := os.CreateTemp(targetDir, "unity-cli-update-*")
 	if err != nil {
 		return "", err
 	}
