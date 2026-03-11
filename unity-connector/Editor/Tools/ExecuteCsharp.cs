@@ -23,6 +23,15 @@ namespace UnityCliConnector.Tools
             "UnityEditor",
         };
 
+        public class Parameters
+        {
+            [ToolParameter("C# code to execute. Single expressions auto-return their result", Required = true)]
+            public string Code { get; set; }
+
+            [ToolParameter("Additional using directives (e.g. Unity.Entities, Unity.Mathematics)")]
+            public string[] Usings { get; set; }
+        }
+
         public static object HandleCommand(JObject parameters)
         {
             var code = parameters["code"]?.Value<string>();

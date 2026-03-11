@@ -9,6 +9,24 @@ namespace UnityCliConnector.Tools
     [UnityCliTool(Description = "Read Unity Profiler data and control profiler state. Actions: read_frames, enable, disable, status, clear.")]
     public static class ManageProfiler
     {
+        public class Parameters
+        {
+            [ToolParameter("Action: read_frames, enable, disable, status, or clear", Required = true)]
+            public string Action { get; set; }
+
+            [ToolParameter("Number of frames to read (default: 1, for read_frames action)")]
+            public int FrameCount { get; set; }
+
+            [ToolParameter("Thread index to read (default: 0, for read_frames action)")]
+            public int Thread { get; set; }
+
+            [ToolParameter("Filter profiler samples by name")]
+            public string Filter { get; set; }
+
+            [ToolParameter("Minimum milliseconds threshold to include (default: 0.01)")]
+            public float MinMs { get; set; }
+        }
+
         public static object HandleCommand(JObject parameters)
         {
             var action = parameters["action"]?.Value<string>()?.ToLowerInvariant();

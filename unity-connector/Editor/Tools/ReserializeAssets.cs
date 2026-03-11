@@ -7,6 +7,15 @@ namespace UnityCliConnector.Tools
     [UnityCliTool(Description = "Force reserialize Unity assets by path.")]
     public static class ReserializeAssets
     {
+        public class Parameters
+        {
+            [ToolParameter("Single asset path to reserialize")]
+            public string Path { get; set; }
+
+            [ToolParameter("Multiple asset paths to reserialize")]
+            public string[] Paths { get; set; }
+        }
+
         public static object HandleCommand(JObject parameters)
         {
             var pathToken = parameters["path"];

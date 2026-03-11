@@ -10,6 +10,12 @@ namespace UnityCliConnector.Tools
     {
         private static readonly HashSet<string> Blacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "File/Quit" };
 
+        public class Parameters
+        {
+            [ToolParameter("Unity menu item path to execute (e.g. File/Save Project)", Required = true)]
+            public string MenuPath { get; set; }
+        }
+
         public static object HandleCommand(JObject @params)
         {
             string menuPath = @params["menu_path"]?.ToString() ?? @params["menuPath"]?.ToString();

@@ -14,6 +14,24 @@ namespace UnityCliConnector.Tools
         private const int TotalLayerCount = 32;
         private const int PlayModeTimeoutSeconds = 60;
 
+        public class Parameters
+        {
+            [ToolParameter("Action to perform: play, stop, pause, refresh, set_active_tool, add_tag, remove_tag, add_layer, remove_layer", Required = true)]
+            public string Action { get; set; }
+
+            [ToolParameter("Wait for action to complete before responding")]
+            public bool WaitForCompletion { get; set; }
+
+            [ToolParameter("Tool name (required for set_active_tool action)")]
+            public string ToolName { get; set; }
+
+            [ToolParameter("Tag name (required for add_tag/remove_tag actions)")]
+            public string TagName { get; set; }
+
+            [ToolParameter("Layer name (required for add_layer/remove_layer actions)")]
+            public string LayerName { get; set; }
+        }
+
         public static async Task<object> HandleCommand(JObject @params)
         {
             if (@params == null)

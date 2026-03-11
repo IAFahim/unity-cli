@@ -11,6 +11,21 @@ namespace UnityCliConnector.Tools
     {
         private const int DefaultWaitTimeoutSeconds = 60;
 
+        public class Parameters
+        {
+            [ToolParameter("Refresh mode: if_dirty (default) or force")]
+            public string Mode { get; set; }
+
+            [ToolParameter("Scope: all (default) or specific path")]
+            public string Scope { get; set; }
+
+            [ToolParameter("Compile mode: none (default), request, or wait")]
+            public string Compile { get; set; }
+
+            [ToolParameter("Wait until Unity is fully ready after refresh")]
+            public bool WaitForReady { get; set; }
+        }
+
         public static async Task<object> HandleCommand(JObject @params)
         {
             string mode = @params?["mode"]?.ToString() ?? "if_dirty";

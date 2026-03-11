@@ -43,6 +43,21 @@ namespace UnityCliConnector.Tools
             }
         }
 
+        public class Parameters
+        {
+            [ToolParameter("Action: get (default) or clear")]
+            public string Action { get; set; }
+
+            [ToolParameter("Log types to include: error, warning, log, all")]
+            public string[] Types { get; set; }
+
+            [ToolParameter("Maximum number of log entries to return")]
+            public int Count { get; set; }
+
+            [ToolParameter("Filter log messages containing this text")]
+            public string FilterText { get; set; }
+        }
+
         public static object HandleCommand(JObject @params)
         {
             if (_startGettingEntriesMethod == null || _getEntryMethod == null)
