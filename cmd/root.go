@@ -217,9 +217,10 @@ Menu:
     menu "Assets/Refresh"
 
 Reserialize:
-  reserialize <path> [paths...] Force YAML reserialize after text edits
+  reserialize [path...]          Force reserialize (no args = entire project)
 
   Examples:
+    reserialize                                                    Reserialize entire project
     reserialize Assets/Scenes/Main.unity
     reserialize Assets/Prefabs/A.prefab Assets/Prefabs/B.prefab
 

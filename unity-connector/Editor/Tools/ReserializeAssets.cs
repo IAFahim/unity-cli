@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UnityCliConnector.Tools
 {
-    [UnityCliTool(Description = "Force reserialize Unity assets by path.")]
+    [UnityCliTool(Description = "Force reserialize Unity assets. No params = entire project.")]
     public static class ReserializeAssets
     {
         public class Parameters
@@ -27,10 +27,14 @@ namespace UnityCliConnector.Tools
             else if (pathToken != null)
                 paths = new[] { pathToken.ToString() };
             else
-                return new ErrorResponse("'path' or 'paths' parameter required");
+                paths = null;
 
-            if (paths.Length == 0)
-                return new ErrorResponse("No paths provided");
+            if (paths == null || paths.Length == 0)
+            {
+                AssetDatabase.ForceReserializeAssets();
+                Debug.Log("[UnityCliConnector] ForceReserializeAssets: entire project");
+                return new SuccessResponse("Reserialized entire project");
+            }
 
             AssetDatabase.ForceReserializeAssets(paths);
             Debug.Log($"[UnityCliConnector] ForceReserializeAssets: {string.Join(", ", paths)}");
