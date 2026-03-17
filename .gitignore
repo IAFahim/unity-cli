@@ -4,3 +4,4 @@ unity-cli
 .DS_Store
 .vscode/
 .idea/
+coverage.out
