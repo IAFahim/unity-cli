@@ -95,14 +95,10 @@ func DiscoverInstance(project string, port int) (*Instance, error) {
 		return nil, fmt.Errorf("no Unity instances found.\nIs Unity running with the Connector package?\nExpected: %s", instancesDir())
 	}
 
-	// Filter: alive (timestamp within 3s) and not stopped
-	now := time.Now().UnixMilli()
+	// Filter out stopped instances
 	var alive []Instance
 	for _, inst := range instances {
 		if inst.State == "stopped" {
-			continue
-		}
-		if now-inst.Timestamp > 3000 {
 			continue
 		}
 		alive = append(alive, inst)
