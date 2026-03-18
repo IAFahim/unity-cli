@@ -67,7 +67,9 @@ func Execute() error {
 		if err != nil {
 			return err
 		}
-		return statusCmd(inst)
+		statusErr := statusCmd(inst)
+		printUpdateNotice()
+		return statusErr
 	}
 
 	inst, err := client.DiscoverInstance(flagProject, flagPort)
@@ -138,6 +140,8 @@ func Execute() error {
 	}
 
 	printResponse(resp)
+
+	printUpdateNotice()
 
 	if !resp.Success {
 		os.Exit(1)
