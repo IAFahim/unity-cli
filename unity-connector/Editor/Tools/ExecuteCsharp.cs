@@ -120,8 +120,7 @@ namespace UnityCliConnector.Tools
                 var (exe, args) = FindCsc(rspFile);
                 if (exe == null)
                     return new ErrorResponse(
-                        "Cannot find csc compiler. Expected at: " +
-                        Path.Combine(EditorApplication.applicationContentsPath, "DotNetSdkRoslyn"));
+                        "Cannot find csc compiler. Searched in: DotNetSdkRoslyn, MonoBleedingEdge/bin, MonoBleedingEdge/bin-linux64");
 
                 var psi = new ProcessStartInfo
                 {
@@ -167,9 +166,11 @@ namespace UnityCliConnector.Tools
 
         private static (string exe, string args) FindCsc(string rspFile)
         {
-            var roslynDir = Path.Combine(EditorApplication.applicationContentsPath, "DotNetSdkRoslyn");
+            var content = EditorApplication.applicationContentsPath;
+            var roslynDir = Path.Combine(content, "DotNetSdkRoslyn");
             var rspArg = $"@\"{rspFile}\"";
 
+            // Try DotNetSdkRoslyn first (newer Unity versions)
             if (Application.platform == RuntimePlatform.WindowsEditor)
             {
                 var cscExe = Path.Combine(roslynDir, "csc.exe");
@@ -183,6 +184,33 @@ namespace UnityCliConnector.Tools
                 var dotnet = FindDotnet();
                 if (dotnet != null)
                     return (dotnet, $"exec \"{cscDll}\" {rspArg}");
+            }
+
+            // Fallback to MonoBleedingEdge (older Unity versions, Unity 6000.x)
+            var monoBleedingEdge = Path.Combine(content, "MonoBleedingEdge");
+
+            if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                var cscExe = Path.Combine(monoBleedingEdge, "bin", "csc.exe");
+                if (File.Exists(cscExe))
+                    return (cscExe, rspArg);
+            }
+            else if (Application.platform == RuntimePlatform.LinuxEditor)
+            {
+                // Try bin-linux64 first, then bin
+                var cscBin = Path.Combine(monoBleedingEdge, "bin-linux64", "csc");
+                if (File.Exists(cscBin))
+                    return (cscBin, rspArg);
+
+                cscBin = Path.Combine(monoBleedingEdge, "bin", "csc");
+                if (File.Exists(cscBin))
+                    return (cscBin, rspArg);
+            }
+            else if (Application.platform == RuntimePlatform.OSXEditor)
+            {
+                var cscBin = Path.Combine(monoBleedingEdge, "bin", "csc");
+                if (File.Exists(cscBin))
+                    return (cscBin, rspArg);
             }
 
             return (null, null);
