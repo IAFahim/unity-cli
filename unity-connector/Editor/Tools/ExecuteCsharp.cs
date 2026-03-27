@@ -37,6 +37,9 @@ namespace UnityCliConnector.Tools
 
             [ToolParameter("Additional using directives (comma-separated, e.g. Unity.Entities,Unity.Mathematics)")]
             public string[] Usings { get; set; }
+
+            [ToolParameter("Path to csc compiler (csc.dll or csc.exe). Auto-detected if omitted.")]
+            public string Csc { get; set; }
         }
 
         public static object HandleCommand(JObject parameters)
@@ -57,7 +60,8 @@ namespace UnityCliConnector.Tools
                     extraUsings.AddRange(usingsToken.ToString().Split(','));
             }
 
-            return CompileAndExecute(BuildSource(code, extraUsings));
+            var cscPath = p.Get("csc");
+            return CompileAndExecute(BuildSource(code, extraUsings), cscPath);
         }
 
         private static string BuildSource(string code, List<string> extraUsings)
@@ -77,7 +81,7 @@ namespace UnityCliConnector.Tools
             return sb.ToString();
         }
 
-        private static object CompileAndExecute(string source)
+        private static object CompileAndExecute(string source, string cscOverride = null)
         {
             var utf8 = new UTF8Encoding(false);
             var tmpDir = Path.Combine(Path.GetTempPath(), "unity-cli-exec");
@@ -114,10 +118,12 @@ namespace UnityCliConnector.Tools
 
                 File.WriteAllText(rspFile, rsp.ToString(), utf8);
 
-                var (exe, args) = FindCsc(rspFile);
+                var (exe, args) = FindCsc(rspFile, cscOverride);
                 if (exe == null)
                     return new ErrorResponse(
-                        "Cannot find csc compiler. Searched in: DotNetSdkRoslyn, MonoBleedingEdge/bin, MonoBleedingEdge/bin-linux64");
+                        "Cannot find csc compiler under: " +
+                        EditorApplication.applicationContentsPath +
+                        "\nSpecify the path manually with --csc <path-to-csc.dll-or-csc.exe>");
 
                 var psi = new ProcessStartInfo
                 {
@@ -170,48 +176,45 @@ namespace UnityCliConnector.Tools
             }
         }
 
-        private static (string exe, string args) FindCsc(string rspFile)
+        private static (string exe, string args) FindCsc(string rspFile, string cscOverride = null)
         {
             var content = EditorApplication.applicationContentsPath;
-            var roslynDir = Path.Combine(content, "DotNetSdkRoslyn");
             var rspArg = $"@\"{rspFile}\"";
 
-            // Try DotNetSdkRoslyn first (newer Unity versions)
-            if (Application.platform == RuntimePlatform.WindowsEditor)
-            {
-                var cscExe = Path.Combine(roslynDir, "csc.exe");
-                if (File.Exists(cscExe))
-                    return (cscExe, rspArg);
-            }
+            var cscDll = !string.IsNullOrEmpty(cscOverride)
+                ? cscOverride
+                : SearchFile(content, "csc.dll");
 
-            var cscDll = Path.Combine(roslynDir, "csc.dll");
-            if (File.Exists(cscDll))
+            if (cscDll != null)
             {
                 var dotnet = FindDotnet();
                 if (dotnet != null)
                     return (dotnet, $"exec \"{cscDll}\" {rspArg}");
             }
 
-            // Fallback to MonoBleedingEdge (older Unity versions, Unity 6000.x)
-            var monoBleedingEdge = Path.Combine(content, "MonoBleedingEdge");
-
-            // Use mono to execute csc.exe directly (wrapper scripts have broken paths)
-            string monoBin = null;
             if (Application.platform == RuntimePlatform.WindowsEditor)
-                monoBin = Path.Combine(monoBleedingEdge, "bin", "mono.exe");
-            else if (Application.platform == RuntimePlatform.LinuxEditor)
-                monoBin = Path.Combine(monoBleedingEdge, "bin-linux64", "mono");
-            else if (Application.platform == RuntimePlatform.OSXEditor)
-                monoBin = Path.Combine(monoBleedingEdge, "bin", "mono");
-
-            if (monoBin != null && File.Exists(monoBin))
             {
-                var cscExe = Path.Combine(monoBleedingEdge, "lib", "mono", "4.5", "csc.exe");
-                if (File.Exists(cscExe))
-                    return (monoBin, $"\"{cscExe}\" {rspArg}");
+                var cscExe = !string.IsNullOrEmpty(cscOverride)
+                    ? cscOverride
+                    : SearchFile(content, "csc.exe");
+                if (cscExe != null)
+                    return (cscExe, rspArg);
             }
 
             return (null, null);
+        }
+
+        private static string SearchFile(string dir, string name)
+        {
+            try
+            {
+                var files = Directory.GetFiles(dir, name, SearchOption.AllDirectories);
+                foreach (var f in files)
+                    if (Path.GetFileName(f) == name)
+                        return f;
+            }
+            catch { }
+            return null;
         }
 
         private static string FindDotnet()
