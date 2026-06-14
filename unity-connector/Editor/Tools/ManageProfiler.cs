@@ -138,7 +138,6 @@ namespace UnityCliConnector.Tools
             int parentId = rootId;
             string parentName = "(root)";
 
-            // --root: find by name
             if (!string.IsNullOrEmpty(rootName))
             {
                 int found = FindItemByName(frameData, rootId, rootName);
@@ -147,7 +146,6 @@ namespace UnityCliConnector.Tools
                 parentId = found;
                 parentName = frameData.GetItemName(found);
             }
-            // --parent: by ID
             else if (parentIdToken != null && parentIdToken.Type != JTokenType.Null)
             {
                 parentId = parentIdToken.Value<int>();
@@ -190,7 +188,6 @@ namespace UnityCliConnector.Tools
 
             int sortColumn = GetSortColumn(sortBy);
 
-            // Collect data across frames
             var accumulated = new Dictionary<string, (double totalMs, double selfMs, long calls, int count)>();
 
             for (int frameIndex = fromFrame; frameIndex <= toFrame; frameIndex++)
@@ -216,7 +213,6 @@ namespace UnityCliConnector.Tools
                 CollectFlat(frameData, parentId, depth, accumulated);
             }
 
-            // Build averaged result
             var sorted = accumulated
                 .Select(kv => new
                 {
@@ -276,7 +272,6 @@ namespace UnityCliConnector.Tools
                 if (itemName.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
                     return childId;
 
-                // Recurse to find nested items
                 int found = FindItemByName(frameData, childId, name);
                 if (found >= 0) return found;
             }

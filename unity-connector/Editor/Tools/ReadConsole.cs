@@ -80,7 +80,6 @@ namespace UnityCliConnector.Tools
 
             var p = new ToolParams(@params);
 
-            // --clear
             if (p.GetBool("clear"))
             {
                 _clearMethod.Invoke(null, null);
