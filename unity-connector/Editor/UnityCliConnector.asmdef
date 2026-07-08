@@ -1,14 +1,18 @@
 {
-  "name": "UnityCliConnector.Editor",
-  "rootNamespace": "UnityCliConnector",
-  "references": [],
-  "includePlatforms": ["Editor"],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "UnityCliConnector.Editor",
+    "rootNamespace": "UnityCliConnector",
+    "references": [
+        "BovineLabs.Nerve"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

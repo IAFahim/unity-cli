@@ -1,23 +1,26 @@
 {
-  "name": "UnityCliConnector.TestRunner",
-  "rootNamespace": "UnityCliConnector.TestRunner",
-  "references": [
-    "UnityCliConnector.Editor",
-    "UnityEditor.TestRunner"
-  ],
-  "includePlatforms": ["Editor"],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [
-    {
-      "name": "com.unity.test-framework",
-      "expression": "1.0.0",
-      "define": "UNITY_TEST_FRAMEWORK"
-    }
-  ],
-  "noEngineReferences": false
+    "name": "UnityCliConnector.TestRunner",
+    "rootNamespace": "UnityCliConnector.TestRunner",
+    "references": [
+        "UnityCliConnector.Editor",
+        "UnityEditor.TestRunner",
+        "BovineLabs.Nerve"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.test-framework",
+            "expression": "1.0.0",
+            "define": "UNITY_TEST_FRAMEWORK"
+        }
+    ],
+    "noEngineReferences": false
 }
